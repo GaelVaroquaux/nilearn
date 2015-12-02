@@ -42,7 +42,7 @@ n_components = 40
 dict_learning = DictLearning(n_components=n_components, smoothing_fwhm=6.,
                              memory="nilearn_cache", memory_level=2,
                              verbose=1,
-                             alpha=2,
+                             alpha=7,
                              random_state=0,
                              n_epochs=1)
 ###############################################################################
@@ -78,8 +78,8 @@ print('[Example] Displaying')
 
 # We select relevant cut coordinates for displaying
 names = ['Dictionary learning', 'CanICA']
-indices = [33, 14]
-cut_coords = find_xyz_cut_coords(index_img(components_imgs[0], 1))
+indices = [27, 5]
+cut_coords = find_xyz_cut_coords(index_img(components_imgs[0], 27))
 for i, atlas in enumerate(components_imgs):
     plot_prob_atlas(atlas, view_type="filled_contours",
                     title="%s" % names[i],
