@@ -148,6 +148,7 @@ def _mask_and_reduce_single(masker,
                         memory_level=memory_level,
                         func_memory_level=3)(this_data.T,
                                              n_samples,
+                                             transpose=True,
                                              random_state=random_state,
                                              n_iter=3)
         U = U.T
