@@ -172,3 +172,4 @@ class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
         if self.do_cca:
             data *= S[:, np.newaxis]
         self.components_ = self.components_.T
+        print(self.components_)
