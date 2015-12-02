@@ -109,8 +109,7 @@ good extracted maps.
 
 .. topic:: **References**
 
-   * Gael Varoquaux et al. `Multi-subject dictionary learning to segment an atlas of brain spontaneous activity
-   <http://hal.inria.fr/inria-00588898/en/>`_,
+   * Gael Varoquaux et al. `Multi-subject dictionary learning to segment an atlas of brain spontaneous activity <http://hal.inria.fr/inria-00588898/en/>`_,
    Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
    in Computer Science,
 
