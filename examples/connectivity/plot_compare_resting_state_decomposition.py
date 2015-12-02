@@ -52,21 +52,25 @@ canica = CanICA(n_components=n_components, smoothing_fwhm=6.,
                 threshold=3.,
                 n_init=1,
                 verbose=1)
-###############################################################################
-# Fitting both estimators
+# ###############################################################################
+# # Fitting both estimators
 estimators = [dict_learning, canica]
-components_imgs = []
-
-for estimator in estimators:
-    print('[Example] Learning maps using %s model' % type(estimator).__name__)
-    estimator.fit(func_filenames)
-    print('[Example] Saving results')
-    # Decomposition estimator embeds their own masker
-    masker = estimator.masker_
-    components_img = masker.inverse_transform(estimator.components_)
-    components_img.to_filename('%s_resting_state.nii.gz' %
-                               type(estimator).__name__)
-    components_imgs.append(components_img)
+names = {dict_learning: 'Dictionary learning', canica: 'CanICA'}
+# components_imgs = []
+#
+# for estimator in estimators:
+#     print('[Example] Learning maps using %s model' % names[estimator])
+#     estimator.fit(func_filenames)
+#     print('[Example] Saving results')
+#     # Decomposition estimator embeds their own masker
+#     masker = estimator.masker_
+#     components_img = masker.inverse_transform(estimator.components_)
+#     components_img.to_filename('%s_resting_state.nii.gz' %
+#                                names[estimator])
+#     components_imgs.append(components_img)
+#
+components_imgs = ['/home/arthur/DictLearning_resting_state.nii.gz',
+                   '/home/arthur/CanICA_resting_state.nii.gz']
 
 ###############################################################################
 # Visualize the results
@@ -77,14 +81,14 @@ from nilearn.image import index_img
 print('[Example] Displaying')
 
 # We select relevant cut coordinates for displaying
-names = ['Dictionary learning', 'CanICA']
-indices = [27, 5]
-cut_coords = find_xyz_cut_coords(index_img(components_imgs[0], 27))
-for i, atlas in enumerate(components_imgs):
+indices = {dict_learning: 19, canica: 4}
+cut_coords = find_xyz_cut_coords(index_img(components_imgs[0],
+                                           indices[dict_learning]))
+for estimator, atlas in zip(estimators, components_imgs):
     plot_prob_atlas(atlas, view_type="filled_contours",
-                    title="%s" % names[i],
+                    title="%s" % names[estimator],
                     cut_coords=cut_coords, colorbar=False)
-    plot_stat_map(index_img(atlas, indices[i]),
-                  title="%s" % names[i],
+    plot_stat_map(index_img(atlas, indices[estimator]),
+                  title="%s" % names[estimator],
                   cut_coords=cut_coords, colorbar=False)
 show()

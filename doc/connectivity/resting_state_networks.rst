@@ -143,8 +143,16 @@ Visualizing the results
    :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
 
+.. |left_img_single| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_002.png
+   :target: ../auto_examples/plot_compare_resting_state_decomposition.html
+   :width: 50%
+.. |right_img_single| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_004.png
+   :target: ../auto_examples/plot_compare_resting_state_decomposition.html
+   :width: 50%
+
 
 .. centered:: |left_img| |right_img|
+.. centered:: |left_img_single| |right_img_single|
 
 Maps obtained with dictionary leaning are often easier to exploit as they are
 less noisy than ICA maps, with blobs usually well defined.
