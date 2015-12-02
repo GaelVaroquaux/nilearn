@@ -38,7 +38,6 @@ n_components = 40
 dict_learning = DictLearning(n_components=n_components,
                              memory="nilearn_cache", memory_level=2,
                              verbose=1,
-                             alpha=7,
                              random_state=0,
                              n_epochs=1)
 ###############################################################################
