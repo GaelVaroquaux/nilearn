@@ -78,10 +78,6 @@ class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
         The number of CPUs to use to do the computation. -1 means
         'all CPUs', -2 'all CPUs but one', and so on.
 
-    in_memory: boolean,
-        Intermediary unmasked data will be
-        stored as a tempory memory map
-
     verbose: integer, optional
         Indicate the level of verbosity. By default, nothing is printed.
 

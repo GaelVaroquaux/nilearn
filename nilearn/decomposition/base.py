@@ -255,7 +255,7 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
                  target_affine=None, target_shape=None,
                  mask_strategy='epi', mask_args=None,
                  memory=Memory(cachedir=None), memory_level=0,
-                 n_jobs=1, in_memory=True,
+                 n_jobs=1,
                  verbose=0):
         self.n_components = n_components
         self.random_state = random_state
@@ -274,7 +274,6 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
         self.memory = memory
         self.memory_level = memory_level
         self.n_jobs = n_jobs
-        self.in_memory = in_memory
         self.verbose = verbose
 
     def fit(self, imgs, y=None, confounds=None):
