@@ -21,7 +21,9 @@ Multi-subject ICA: CanICA
 .. topic:: **References**
 
     * G. Varoquaux et al. "A group model for stable multi-subject ICA on
-      fMRI datasets", `NeuroImage Vol 51 (2010) <http://www.sciencedirect.com/science/article/pii/S1053811910001618>`_, p. 288-299
+      fMRI datasets", `NeuroImage Vol 51 (2010)
+      <http://www.sciencedirect.com/science/article/pii/S1053811910001618>`_,
+       p. 288-299
 
 Data preparation: retrieving example data
 -----------------------------------------
@@ -107,7 +109,9 @@ good extracted maps.
 
 .. topic:: **References**
 
-   * Gael Varoquaux et al. `Multi-subject dictionary learning to segment an atlas of brain spontaneous activity <http://hal.inria.fr/inria-00588898/en/>`_,
+   * Gael Varoquaux et al. `Multi-subject dictionary learning to segment an
+   atlas of brain spontaneous activity
+    <http://hal.inria.fr/inria-00588898/en/>`_,
    Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
    in Computer Science,
 

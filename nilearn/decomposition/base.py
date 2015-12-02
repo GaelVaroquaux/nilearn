@@ -31,7 +31,7 @@ def mask_and_reduce(masker, imgs,
     """Mask and reduce provided 4D images with given masker.
 
     Uses a PCA (randomized for small reduction ratio) or a range finding matrix
-    on time series to reduce data size in time direction. For multiple imageS,
+    on time series to reduce data size in time direction. For multiple images,
     the concatenation of data is returned, either as an ndarray or a memorymap
     (useful for big datasets that do not fit in memory).
 
