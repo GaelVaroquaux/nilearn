@@ -64,7 +64,6 @@ for estimator in estimators:
                                names[estimator])
     components_imgs.append(components_img)
 
-
 ###############################################################################
 # Visualize the results
 from nilearn.plotting import plot_prob_atlas, find_xyz_cut_coords, show, \
