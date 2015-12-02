@@ -88,7 +88,7 @@ Finally, we can plot the map for different ICA components separately:
 .. seealso::
 
    The full code can be found as an example:
-   :ref:`sphx_glr_auto_examples_connectivity_plot_canica_resting_state.py`
+   :ref:`../auto_examples/connectivity/plot_canica_resting_state.html`
 
 .. note::
 
@@ -165,4 +165,4 @@ classification tasks.
 .. seealso::
 
    The full code can be found as an example:
-   :ref:`sphx_glr_auto_examples_plot_compare_resting_state_decomposition.py`
+   :ref:`../auto_examples/connectivity/plot_compare_resting_state_decomposition.html`
