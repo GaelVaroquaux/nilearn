@@ -16,7 +16,7 @@ than ICA
     Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
     in Computer Science
 
-Available on hal
+Available on https://hal.inria.fr/inria-00588898/en/
 """
 import matplotlib
 
