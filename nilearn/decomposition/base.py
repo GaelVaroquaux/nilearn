@@ -87,14 +87,14 @@ def mask_and_reduce(masker, imgs,
         else:
             reduction_ratio = float(reduction_ratio)
         if not 0 <= reduction_ratio <= 1:
-            raise ValueError('Reduction ratio should be between 0., 1.,'
+            raise ValueError('Reduction ratio should be between 0. and 1.,'
                              'got %.2f' % reduction_ratio)
 
     if confounds is None:
         confounds = [None] * len(imgs)
 
     # Precomputing number of samples for preallocation
-    subject_n_samples = np.zeros(len(imgs), dtype='int')
+    subject_n_samples = np.zeros(len(imgs), dtype='int64')
     for i, img in enumerate(imgs):
         this_n_samples = check_niimg_4d(img).shape[3]
         if reduction_ratio == 'auto':
