@@ -110,13 +110,13 @@ good extracted maps.
 .. topic:: **References**
 
    * Gael Varoquaux et al. `Multi-subject dictionary learning to segment an atlas of brain spontaneous activitym <http://hal.inria.fr/inria-00588898/en/>`_,
-   Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
-   in Computer Science,
+     Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
+     in Computer Science,
 
 Applying DictLearning
 ---------------------
 
-DictLearning is a ready-to-use class with the same interface as CanICA.
+:class:'DictLearning' is a ready-to-use class with the same interface as CanICA.
 Sparsity of output map is controlled by a parameter alpha: using a
 larger alpha yields sparser maps.
 
