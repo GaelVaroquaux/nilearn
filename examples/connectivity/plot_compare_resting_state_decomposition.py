@@ -17,9 +17,6 @@ than ICA
 
 Available on https://hal.inria.fr/inria-00588898/en/
 """
-import matplotlib
-
-matplotlib.use('Qt4Agg')
 ### Load ADHD rest dataset ####################################################
 from nilearn import datasets
 
@@ -55,21 +52,19 @@ canica = CanICA(n_components=n_components, smoothing_fwhm=6.,
 # # Fitting both estimators
 estimators = [dict_learning, canica]
 names = {dict_learning: 'Dictionary learning', canica: 'CanICA'}
-# components_imgs = []
-#
-# for estimator in estimators:
-#     print('[Example] Learning maps using %s model' % names[estimator])
-#     estimator.fit(func_filenames)
-#     print('[Example] Saving results')
-#     # Decomposition estimator embeds their own masker
-#     masker = estimator.masker_
-#     components_img = masker.inverse_transform(estimator.components_)
-#     components_img.to_filename('%s_resting_state.nii.gz' %
-#                                names[estimator])
-#     components_imgs.append(components_img)
-#
-components_imgs = ['/home/arthur/DictLearning_resting_state.nii.gz',
-                   '/home/arthur/CanICA_resting_state.nii.gz']
+components_imgs = []
+
+for estimator in estimators:
+    print('[Example] Learning maps using %s model' % names[estimator])
+    estimator.fit(func_filenames)
+    print('[Example] Saving results')
+    # Decomposition estimator embeds their own masker
+    masker = estimator.masker_
+    components_img = masker.inverse_transform(estimator.components_)
+    components_img.to_filename('%s_resting_state.nii.gz' %
+                               names[estimator])
+    components_imgs.append(components_img)
+
 
 ###############################################################################
 # Visualize the results

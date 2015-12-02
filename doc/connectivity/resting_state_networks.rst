@@ -75,11 +75,11 @@ Finally, we can plot the map for different ICA components separately:
 .. literalinclude:: ../../examples/connectivity/plot_canica_resting_state.py
     :start-after: # Finally, we plot the map for each ICA component separately
 
-.. |left_img| image:: ../auto_examples/connectivity/images/sphx_glr_plot_canica_resting_state_003.png
+.. |left_img| image:: ../_images/sphx_glr_plot_canica_resting_state_003.png
    :target: ../auto_examples/connectivity/plot_canica_resting_state.html
    :width: 33%
 
-.. |right_img| image:: ../auto_examples/connectivity/images/sphx_glr_plot_canica_resting_state_004.png
+.. |right_img| image:: ../_images/sphx_glr_plot_canica_resting_state_004.png
    :target: ../auto_examples/connectivity/plot_canica_resting_state.html
    :width: 33%
 
@@ -138,17 +138,17 @@ Visualizing the results
 .. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
     :start-after: # Visualize the results
 
-.. |left_img| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_001.png
+.. |left_img| image:: ../_images/sphx_glr_plot_compare_resting_state_decomposition_001.png
    :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
-.. |right_img| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_003.png
+.. |right_img| image:: ../_images/sphx_glr_plot_compare_resting_state_decomposition_003.png
    :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
 
-.. |left_img_single| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_002.png
+.. |left_img_single| image:: ../_images/sphx_glr_plot_compare_resting_state_decomposition_002.png
    :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
-.. |right_img_single| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_004.png
+.. |right_img_single| image:: ../_images/sphx_glr_plot_compare_resting_state_decomposition_004.png
    :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
 
