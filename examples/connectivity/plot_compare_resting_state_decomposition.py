@@ -35,7 +35,7 @@ n_components = 40
 
 ###############################################################################
 # Dictionary learning
-dict_learning = DictLearning(n_components=n_components, smoothing_fwhm=6.,
+dict_learning = DictLearning(n_components=n_components,
                              memory="nilearn_cache", memory_level=2,
                              verbose=1,
                              alpha=7,
@@ -43,7 +43,7 @@ dict_learning = DictLearning(n_components=n_components, smoothing_fwhm=6.,
                              n_epochs=1)
 ###############################################################################
 # CanICA
-canica = CanICA(n_components=n_components, smoothing_fwhm=6.,
+canica = CanICA(n_components=n_components,
                 memory="nilearn_cache", memory_level=2,
                 threshold=3.,
                 n_init=1,
