@@ -103,14 +103,6 @@ def mask_and_reduce(masker, imgs,
         else:
             subject_n_samples[i] = int(ceil(this_n_samples *
                                             reduction_ratio))
-    n_voxels = np.sum(_safe_get_data(masker.mask_img_))
-    n_samples = np.sum(subject_n_samples)
-
-    # XXX Should we provided memory mapping for n_jobs > 1 to allow concurrent
-    # write ?
-    data = np.empty((n_samples, n_voxels), order='F',
-                    dtype='float64')
-
     data_list = Parallel(n_jobs=n_jobs)(
         delayed(_mask_and_reduce_single)(
             masker,
@@ -121,6 +113,10 @@ def mask_and_reduce(masker, imgs,
             random_state=random_state
         ) for img, confound, n_samples in zip(imgs, confounds,
                                                       subject_n_samples))
+    n_samples = np.sum(subject_n_samples)
+    n_voxels = np.sum(_safe_get_data(masker.mask_img_))
+    data = np.empty((n_samples, n_voxels), order='F',
+                    dtype='float64')
 
     current_position = 0
     for i, next_position in enumerate(np.cumsum(subject_n_samples)):

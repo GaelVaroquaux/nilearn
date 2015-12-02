@@ -118,13 +118,13 @@ DictLearning is a ready-to-use class with the same interface as CanICA.
 Sparsity of output map is controlled by a parameter alpha: using a
 larger alpha yields sparser mapsf.
 
-.. literalinclude:: ../../examples/connectivity/compare_resting_state_decomposition.py
+.. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
     :start-after: ### Dictionary learning #######################################################
     :end-before: ### CanICA ####################################################################
 
 We can fit both estimators to compare them
 
-.. literalinclude:: ../../examples/connectivity/compare_resting_state_decomposition.py
+.. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
     :start-after: ### Fitting both estimators ###################################################
     :end-before: ### Visualize the results #####################################################
 
@@ -133,11 +133,11 @@ Visualizing the results
 
 4D plotting offers an efficient way to compare both resulting outputs
 
-.. literalinclude:: ../../examples/connectivity/compare_resting_state_decomposition.py
+.. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
     :start-after: ### Visualize the results #####################################################
 
-        .. |img| image:: ../auto_examples/connectivity/images/compare_resting_state_decomposition.png
-   :target: ../auto_examples/compare_resting_state_decomposition.html
+        .. |img| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition.png
+   :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
 
 .. centered:: |img|
@@ -151,4 +151,4 @@ classification tasks.
 .. seealso::
 
    The full code can be found as an example:
-   :ref:`example_compare_resting_state_decomposition.py`
+   :ref:`example_plot_compare_resting_state_decomposition.py`
