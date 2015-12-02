@@ -22,8 +22,6 @@ Pre-prints for both papers are available on hal
 """
 
 ####################################################################
-import matplotlib
-matplotlib.use('Qt4Agg')
 # First we load the ADHD200 data
 from nilearn import datasets
 
