@@ -66,10 +66,10 @@ class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
 
     reduction_ratio: 'auto' or float between 0. and 1.
         - Between 0. or 1. : controls data temporal reduction, 1. means no
-        reduction, 0.5 means we will reduce a subject record to have 50%
-        summary time samples
+          reduction, 0.5 means we will reduce a subject record to have 50%
+          summary time samples
         - if set to 'auto', estimator will set the number of components per
-        compressed session to be n_components.
+          compressed session to be n_components.
 
     random_state: int or RandomState
         Pseudo number generator state used for random sampling.
