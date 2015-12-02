@@ -1,6 +1,6 @@
 """
-Base class for decomposition estimators, utilies for masking and reducing group
-data
+Base class for decomposition estimators, utilities for masking and dimension
+reduction of group data
 """
 from __future__ import division
 
@@ -28,10 +28,10 @@ def mask_and_reduce(masker, imgs,
                     memory_level=0,
                     memory=Memory(cachedir=None),
                     n_jobs=1):
-    """Mask and reduce provided data with provided masker, using a PCA
+    """Mask and reduce provided 4D images with given masker.
 
     Uses a PCA (randomized for small reduction ratio) or a range finding matrix
-    on time series to reduce data size in time. For multiple image,
+    on time series to reduce data size in time direction. For multiple imageS,
     the concatenation of data is returned, either as an ndarray or a memorymap
     (useful for big datasets that do not fit in memory).
 
@@ -42,15 +42,15 @@ def mask_and_reduce(masker, imgs,
 
     imgs: list of Niimg-like objects
         See http://nilearn.github.io/building_blocks/manipulating_mr_images.html#niimg.
-        List of subject data.
+        List of subject data to mask, reduce and stack.
 
-    confounds: CSV file path or 2D matrix
+    confounds: CSV file path or 2D matrix, optional
         This parameter is passed to signal.clean. Please see the
         corresponding documentation for details.
 
-    reduction_ratio: 'auto' or float in [0., 1.], optional
+    reduction_ratio: 'auto' or float between 0. and 1.
         - Between 0. or 1. : controls compression of data, 1. means no
-        compression
+        compression.
         - if set to 'auto', estimator will set the number of components per
         compressed session to be n_components.
 
@@ -235,10 +235,6 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
     n_jobs: integer, optional
         The number of CPUs to use to do the computation. -1 means
         'all CPUs', -2 'all CPUs but one', and so on.
-
-    in_memory: boolean,
-        Intermediary unmasked data will be
-        stored as a tempory memory map
 
     verbose: integer, optional
         Indicate the level of verbosity. By default, nothing is printed.

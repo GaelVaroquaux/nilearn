@@ -4,7 +4,7 @@ resting-state fMRI
 =====================================================
 
 An example applying dictionary learning and ICA to resting-state data,
-comparing resulting components using 4D plotting.
+visualizing resulting components using atlas plotting tools.
 
 Dictionary learning is a sparsity based decomposition method for extracting
 spatial maps. It extracts maps that are naturally sparse and usually cleaner
@@ -16,13 +16,13 @@ than ICA
     Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
     in Computer Science
 
-https://hal.inria.fr/inria-00588898/en/
+Available on hal
 """
 
 ### Load ADHD rest dataset ####################################################
 from nilearn import datasets
 
-adhd_dataset = datasets.fetch_adhd(n_subjects=40)
+adhd_dataset = datasets.fetch_adhd()
 func_filenames = adhd_dataset.func  # list of 4D nifti files for each subject
 
 # print basic information on the dataset
@@ -54,7 +54,7 @@ components_imgs = []
 for estimator in estimators:
     print('[Example] Learning maps using %s model' % type(estimator).__name__)
     estimator.fit(func_filenames)
-    print('[Example] Dumping results')
+    print('[Example] Saving results')
     # Decomposition estimator embeds their own masker
     masker = estimator.masker_
     components_img = masker.inverse_transform(estimator.components_)
@@ -63,7 +63,6 @@ for estimator in estimators:
     components_imgs.append(components_img)
 
 ### Visualize the results #####################################################
-# Show components from both methods using 4D plotting tools
 import matplotlib.pyplot as plt
 from nilearn.plotting import plot_prob_atlas, find_xyz_cut_coords
 from nilearn.image import index_img

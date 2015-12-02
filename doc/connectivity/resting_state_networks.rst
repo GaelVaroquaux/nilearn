@@ -98,10 +98,11 @@ Finally, we can plot the map for different ICA components separately:
 Beyond ICA : Dictionary learning
 ================================
 
-Recent work has shown that dictionary learning based techniques.
-Dictionary learning in neuro-imaging seek to extract a few representative
-temporal elements along with their sparse spatial loadings, which constitutes
-good extracted maps, that are usually less noisy and better localized than ICA
+Recent work has shown that dictionary learning based techniques outperform
+ICA in term of stability and as the initial step of a prediction pipeline.
+Dictionary learning in neuro-imaging seeks to extract a few representative
+temporal elements along with their sparse spatial loadings, which constitute
+good extracted maps: they are usually less noisy and better localized than ICA
 extracted maps.
 
 .. topic:: **References**
