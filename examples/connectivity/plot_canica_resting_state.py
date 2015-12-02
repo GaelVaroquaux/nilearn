@@ -1,6 +1,6 @@
 """
 Group analysis of resting-state fMRI with ICA: CanICA
-===========================ggg==========================
+=====================================================
 
 An example applying CanICA to resting-state data. This example applies it
 to 40 subjects of the ADHD200 datasets. Then it plots a map with all the

@@ -3,9 +3,7 @@ Base class for decomposition estimators, utilities for masking and dimension
 reduction of group data
 """
 from __future__ import division
-
 from math import ceil
-
 import numpy as np
 from scipy import linalg
 from sklearn.base import BaseEstimator
@@ -13,7 +11,6 @@ from sklearn.externals.joblib import Memory, Parallel, delayed
 from sklearn.linear_model import LinearRegression
 from sklearn.utils import check_random_state
 from sklearn.utils.extmath import randomized_svd
-
 from .._utils.cache_mixin import CacheMixin, cache
 from .._utils.niimg import _safe_get_data
 from .._utils.niimg_conversions import check_niimg_4d
@@ -49,8 +46,9 @@ def mask_and_reduce(masker, imgs,
         corresponding documentation for details.
 
     reduction_ratio: 'auto' or float between 0. and 1.
-        - Between 0. or 1. : controls compression of data, 1. means no
-        compression.
+        - Between 0. or 1. : controls data temporal reduction, 1. means no
+        reduction, 0.5 means we will reduce a subject record to have 50%
+        summary time samples
         - if set to 'auto', estimator will set the number of components per
         compressed session to be n_components.
 
@@ -112,7 +110,7 @@ def mask_and_reduce(masker, imgs,
             memory_level=memory_level,
             random_state=random_state
         ) for img, confound, n_samples in zip(imgs, confounds,
-                                                      subject_n_samples))
+                                              subject_n_samples))
     n_samples = np.sum(subject_n_samples)
     n_voxels = np.sum(_safe_get_data(masker.mask_img_))
     data = np.empty((n_samples, n_voxels), order='F',
