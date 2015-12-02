@@ -70,8 +70,6 @@ from nilearn.image import index_img
 
 print('[Example] Displaying')
 
-fig, axes = plt.subplots(nrows=len(estimators))
-
 # We select pertinent cut coordinates for displaying
 cut_coords = find_xyz_cut_coords(index_img(components_imgs[0], 1))
 for estimator, atlas in zip(estimators, components_imgs):
