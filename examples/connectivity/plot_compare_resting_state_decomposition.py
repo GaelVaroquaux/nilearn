@@ -10,10 +10,10 @@ spatial maps. It extracts maps that are naturally sparse and usually cleaner
 than ICA
 
     * Gael Varoquaux et al.
-    Multi-subject dictionary learning to segment an atlas of brain spontaneous
-    activity
-    Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
-    in Computer Science
+      Multi-subject dictionary learning to segment an atlas of brain spontaneous
+      activity
+      Information Processing in Medical Imaging, 2011, pp. 562-573, Lecture Notes
+      in Computer Science
 
 Available on https://hal.inria.fr/inria-00588898/en/
 """
