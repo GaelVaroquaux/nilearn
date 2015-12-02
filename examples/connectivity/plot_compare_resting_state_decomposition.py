@@ -1,7 +1,6 @@
 """
-Comparison of Dictionary Learning and ICA for doing group analysis of
-resting-state fMRI
-=====================================================
+Dictionary Learning and ICA for doing group analysis of resting-state fMRI
+==========================================================================
 
 An example applying dictionary learning and ICA to resting-state data,
 visualizing resulting components using atlas plotting tools.
