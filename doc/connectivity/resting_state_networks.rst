@@ -113,9 +113,9 @@ extracted maps.
 Applying DictLearning
 ---------------------
 
-DictLearning is a ready-to-use class that is used just like CanICA. Sparsity of
-output map is controlled by a penalty parameter alpha (using a larger alpha
-yields sparser maps)
+DictLearning is a ready-to-use class with the same interface as CanICA.
+Sparsity of output map is controlled by a parameter alpha: using a
+larger alpha yields sparser mapsf.
 
 .. literalinclude:: ../../examples/connectivity/compare_resting_state_decomposition.py
     :start-after: ### Dictionary learning #######################################################

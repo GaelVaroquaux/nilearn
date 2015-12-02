@@ -40,7 +40,7 @@ def _compute_loadings(components, data):
 
 
 class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
-    """Perform a map learning algorithm based on component sparsity,
+    """Perform a map learning algorithm based on spatial component sparsity,
      over a CanICA initialization.  This yields more stable maps than CanICA.
 
     Parameters
@@ -202,7 +202,7 @@ class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
             Data on which PCA must be calculated. If this is a list,
             the affine is considered the same for all.
 
-        confounds: CSV file path or 2D matrixf
+        confounds: CSV file path or 2D matrix
             This parameter is passed to nilearn.signal.clean. Please see the
             related documentation for details
         """
@@ -261,7 +261,7 @@ class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
             shuffle=True,
             n_jobs=1)
         self.components_ = self.components_.T
-        # Normalize components
+        # Unit-variance scaling
         S = np.sqrt(np.sum(self.components_ ** 2, axis=1))
         S[S == 0] = 1
         self.components_ /= S[:, np.newaxis]

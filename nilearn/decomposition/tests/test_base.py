@@ -90,7 +90,7 @@ def test_base_decomposition():
     assert_raises_regex(ValueError,
                         "Object has no components_ attribute. "
                         "This may be because "
-                        "BaseDecomposition is direclty "
+                        "BaseDecomposition is directly "
                         "being used.",
                         base_decomposition.transform, data)
     assert_raises_regex(ValueError,

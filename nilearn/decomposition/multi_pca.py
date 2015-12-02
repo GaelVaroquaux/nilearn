@@ -13,11 +13,10 @@ from .base import BaseDecomposition, mask_and_reduce
 
 class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
     """Perform Multi Subject Principal Component Analysis.
-    This is a good initialization method for ICA.
 
     Perform a PCA on each subject, stack the results, and reduce them
     at group level. An optional Canonical Correlation Analysis can be
-     performed at group level.
+     performed at group level. This is a good initialization method for ICA.
 
     Parameters
     ----------
@@ -99,9 +98,9 @@ class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
         The mask of the data. If no mask was given at masker creation, contains
         the automatically computed mask.
 
-    `components_`: 2D numpy array (n_components x n-voxels)ca
+    `components_`: 2D numpy array (n_components x n-voxels)
         Array of masked extracted components. They can be unmasked thanks to
-        the `_pca_masker_` attribute.
+        the `masker_` attribute.
     """
 
     def __init__(self, n_components=20, do_cca=True,

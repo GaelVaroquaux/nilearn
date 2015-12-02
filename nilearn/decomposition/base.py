@@ -38,11 +38,11 @@ def mask_and_reduce(masker, imgs,
     Parameters
     ----------
     masker: NiftiMasker or MultiNiftiMasker
-        Masker to use to mask provided data
+        Instance used to mask provided data.
 
     imgs: list of Niimg-like objects
         See http://nilearn.github.io/building_blocks/manipulating_mr_images.html#niimg.
-        List of subject data
+        List of subject data.
 
     confounds: CSV file path or 2D matrix
         This parameter is passed to signal.clean. Please see the
@@ -52,10 +52,10 @@ def mask_and_reduce(masker, imgs,
         - Between 0. or 1. : controls compression of data, 1. means no
         compression
         - if set to 'auto', estimator will set the number of components per
-        compressed session to be n_components
+        compressed session to be n_components.
 
     n_components: integer, optional
-        Number of components to be extracted by the PCA
+        Number of components to be extracted by the PCA.
 
     random_state: int or RandomState
         Pseudo number generator state used for random sampling.
@@ -67,24 +67,20 @@ def mask_and_reduce(masker, imgs,
     memory: joblib.Memory
         Used to cache the function calls.
 
-    Retuns
+    Returns
     ------
     data: ndarray or memorymap
-        Concatenation of reduced data
+        Concatenation of reduced data.
     """
 
     if not hasattr(imgs, '__iter__'):
         imgs = [imgs]
-    else:
-        imgs = imgs
 
     if reduction_ratio == 'auto':
         if n_components is None:
             # Reduction ratio is 1 if
             # neither n_components nor ratio is provided
             reduction_ratio = 1
-        else:
-            reduction_ratio = 'auto'
     else:
         if reduction_ratio is None:
             reduction_ratio = 1
@@ -164,11 +160,12 @@ def _mask_and_reduce_single(masker,
 
 
 class BaseDecomposition(BaseEstimator, CacheMixin):
-    """Base class for decomposition estimator. Handles mask logic, provides
-     transform and inverse_transform methods
+    """Base class for decomposition estimator.
+
+     Handles mask logic, provides transform and inverse_transform methods
 
     Parameters
-    ==========
+    ----------
     n_components: int
         Number of components to extract, for each 4D-Niimage
 
@@ -213,7 +210,7 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
         This parameter is passed to image.resample_img. Please see the
         related documentation for details.
 
-    mask_strategy: {'background' or 'epi'}, optional
+    mask_strategy: {'background', 'epi'}, optional
         The strategy used to compute the mask: use 'background' if your
         images present a clear homogeneous background, and 'epi' if they
         are raw EPI images. Depending on this value, the mask will be
@@ -226,7 +223,7 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
         to fine-tune mask computation. Please see the related documentation
         for details.
 
-    memory: instance of joblib.Memory or string
+    memory: instance of joblib.Memory or str
         Used to cache the masking process.
         By default, no caching is done. If a string is given, it is the
         path to the caching directory.
@@ -247,13 +244,7 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
         Indicate the level of verbosity. By default, nothing is printed.
 
     Attributes
-    ==========
-    `_pca_masker_`: instance of MultiNiftiMasker
-        Masker used to filter and mask data as first step. If an instance of
-        MultiNiftiMasker is given in `mask` parameter,
-        this is a copy of it. Otherwise, a masker is created using the value
-        of `mask` and other NiftiMasker related parameters as initialization.
-
+    ----------
     `mask_img_`: Niimg-like object
         See http://nilearn.github.io/building_blocks/manipulating_mr_images.html#niimg.
         The mask of the data. If no mask was given at masker creation, contains
@@ -323,7 +314,7 @@ class BaseDecomposition(BaseEstimator, CacheMixin):
             if self.__class__.__name__ == 'BaseDecomposition':
                 raise ValueError("Object has no components_ attribute. "
                                  "This may be because "
-                                 "BaseDecomposition is direclty "
+                                 "BaseDecomposition is directly "
                                  "being used.")
             else:
                 raise ValueError("Object has no components_ attribute. "
