@@ -18,7 +18,8 @@ than ICA
 
 Available on hal
 """
-
+import matplotlib
+matplotlib.use('Qt4Agg')
 ### Load ADHD rest dataset ####################################################
 from nilearn import datasets
 
@@ -70,11 +71,13 @@ from nilearn.image import index_img
 print('[Example] Displaying')
 
 fig, axes = plt.subplots(nrows=len(estimators))
+
 # We select pertinent cut coordinates for displaying
 cut_coords = find_xyz_cut_coords(index_img(components_imgs[0], 1))
-for estimator, cur_img, ax in zip(estimators, components_imgs, axes):
-    plot_prob_atlas(cur_img, view_type="filled_contours",
+for estimator, atlas in zip(estimators, components_imgs):
+    fig = plt.figure()
+    plot_prob_atlas(atlas, view_type="filled_contours",
                     title="%s" % estimator.__class__.__name__,
-                    axes=ax,
+                    figure=fig,
                     cut_coords=cut_coords, colorbar=False)
-plt.show()
+    plt.show(fig)

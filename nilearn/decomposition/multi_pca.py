@@ -165,6 +165,7 @@ class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
         self.components_, self.variance_, _ = self._cache(
             randomized_svd, func_memory_level=2)(
             data.T, n_components=self.n_components,
+            transpose=True,
             random_state=self.random_state, n_iter=3)
         if self.do_cca:
             data *= S[:, np.newaxis]

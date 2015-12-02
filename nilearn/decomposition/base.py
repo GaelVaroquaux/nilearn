@@ -141,8 +141,7 @@ def _mask_and_reduce_single(masker,
                         func_memory_level=3)(this_data.T,
                                              n_samples,
                                              transpose=True,
-                                             random_state=random_state,
-                                             n_iter=3)
+                                             random_state=random_state)
         U = U.T
     else:
         U, S, _ = cache(linalg.svd, memory,
