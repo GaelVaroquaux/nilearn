@@ -163,4 +163,4 @@ classification tasks.
 .. seealso::
 
    The full code can be found as an example:
-   :ref:`example_plot_compare_resting_state_decomposition.py`
+   :ref:`sphx_glr_auto_examples_plot_compare_resting_state_decomposition.py`
