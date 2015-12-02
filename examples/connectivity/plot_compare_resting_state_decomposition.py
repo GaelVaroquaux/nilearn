@@ -19,6 +19,7 @@ than ICA
 Available on hal
 """
 import matplotlib
+
 matplotlib.use('Qt4Agg')
 ### Load ADHD rest dataset ####################################################
 from nilearn import datasets
@@ -30,25 +31,29 @@ func_filenames = adhd_dataset.func  # list of 4D nifti files for each subject
 print('First functional nifti image (4D) is at: %s' %
       adhd_dataset.func[0])  # 4D data
 
-### Apply Decomposition estimators#############################################
+#################################s#############################################
+# Apply Decomposition estimator
 from nilearn.decomposition import DictLearning, CanICA
 
-n_components = 20
+n_components = 40
 
-### Dictionary learning #######################################################
+###############################################################################
+# Dictionary learning
 dict_learning = DictLearning(n_components=n_components, smoothing_fwhm=6.,
                              memory="nilearn_cache", memory_level=2,
                              verbose=1,
                              alpha=2,
                              random_state=0,
                              n_epochs=1)
-### CanICA ####################################################################
+###############################################################################
+# CanICA
 canica = CanICA(n_components=n_components, smoothing_fwhm=6.,
-                memory="nilearn_cache",  memory_level=2,
+                memory="nilearn_cache", memory_level=2,
                 threshold=3.,
+                n_init=1,
                 verbose=1)
-
-### Fitting both estimators ###################################################
+###############################################################################
+# Fitting both estimators
 estimators = [dict_learning, canica]
 components_imgs = []
 
@@ -63,19 +68,23 @@ for estimator in estimators:
                                type(estimator).__name__)
     components_imgs.append(components_img)
 
-### Visualize the results #####################################################
-import matplotlib.pyplot as plt
-from nilearn.plotting import plot_prob_atlas, find_xyz_cut_coords
+###############################################################################
+# Visualize the results
+from nilearn.plotting import plot_prob_atlas, find_xyz_cut_coords, show, \
+    plot_stat_map
 from nilearn.image import index_img
 
 print('[Example] Displaying')
 
-# We select pertinent cut coordinates for displaying
+# We select relevant cut coordinates for displaying
+names = ['Dictionary learning', 'CanICA']
+indices = [33, 14]
 cut_coords = find_xyz_cut_coords(index_img(components_imgs[0], 1))
-for estimator, atlas in zip(estimators, components_imgs):
-    fig = plt.figure()
+for i, atlas in enumerate(components_imgs):
     plot_prob_atlas(atlas, view_type="filled_contours",
-                    title="%s" % estimator.__class__.__name__,
-                    figure=fig,
+                    title="%s" % names[i],
                     cut_coords=cut_coords, colorbar=False)
-plt.show()
+    plot_stat_map(index_img(atlas, indices[i]),
+                  title="%s" % names[i],
+                  cut_coords=cut_coords, colorbar=False)
+show()

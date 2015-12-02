@@ -99,11 +99,11 @@ Beyond ICA : Dictionary learning
 ================================
 
 Recent work has shown that dictionary learning based techniques outperform
-ICA in term of stability and as the initial step of a prediction pipeline.
+ICA in term of stability and constitutes a better first step in a statistical
+analysis pipeline.
 Dictionary learning in neuro-imaging seeks to extract a few representative
 temporal elements along with their sparse spatial loadings, which constitute
-good extracted maps: they are usually less noisy and better localized than ICA
-extracted maps.
+good extracted maps.
 
 .. topic:: **References**
 
@@ -116,17 +116,17 @@ Applying DictLearning
 
 DictLearning is a ready-to-use class with the same interface as CanICA.
 Sparsity of output map is controlled by a parameter alpha: using a
-larger alpha yields sparser mapsf.
+larger alpha yields sparser maps.
 
 .. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
-    :start-after: ### Dictionary learning #######################################################
-    :end-before: ### CanICA ####################################################################
+    :start-after: # Dictionary learning
+    :end-before:# CanICA
 
 We can fit both estimators to compare them
 
 .. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
-    :start-after: ### Fitting both estimators ###################################################
-    :end-before: ### Visualize the results #####################################################
+    :start-after: # Fitting both estimators
+    :end-before: # Visualize the results
 
 Visualizing the results
 -----------------------
@@ -134,13 +134,17 @@ Visualizing the results
 4D plotting offers an efficient way to compare both resulting outputs
 
 .. literalinclude:: ../../examples/connectivity/plot_compare_resting_state_decomposition.py
-    :start-after: ### Visualize the results #####################################################
+    :start-after: # Visualize the results
 
-        .. |img| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition.png
+.. |left_img| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_001.png
+   :target: ../auto_examples/plot_compare_resting_state_decomposition.html
+   :width: 50%
+.. |right_img| image:: ../auto_examples/connectivity/images/plot_compare_resting_state_decomposition_003.png
    :target: ../auto_examples/plot_compare_resting_state_decomposition.html
    :width: 50%
 
-.. centered:: |img|
+
+.. centered:: |left_img| |right_img|
 
 Maps obtained with dictionary leaning are often easier to exploit as they are
 less noisy than ICA maps, with blobs usually well defined.
