@@ -125,7 +125,6 @@ class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
       spontaneous activity
       Information Processing in Medical Imaging, 2011, pp. 562-573,
       Lecture Notes in Computer Science
-
     """
 
     def __init__(self, n_components=20,
