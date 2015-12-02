@@ -4,6 +4,8 @@ reduction of group data
 """
 from __future__ import division
 from math import ceil
+
+import itertools
 import numpy as np
 from scipy import linalg
 from sklearn.base import BaseEstimator
@@ -70,9 +72,10 @@ def mask_and_reduce(masker, imgs,
     data: ndarray or memorymap
         Concatenation of reduced data.
     """
-
-    imgs = _iter_check_niimg(imgs, atleast_4d='True', memory=memory,
-                             memory_level=memory_level)
+    if not hasattr(imgs, '__iter__'):
+        imgs = [imgs]
+    imgs = list(_iter_check_niimg(imgs, atleast_4d='True', memory=memory,
+                             memory_level=memory_level))
 
     if reduction_ratio == 'auto':
         if n_components is None:
@@ -89,18 +92,19 @@ def mask_and_reduce(masker, imgs,
                              'got %.2f' % reduction_ratio)
 
     if confounds is None:
-        confounds = [None] * len(imgs)
+        confounds = itertools.repeat(confounds)
 
     # Precomputing number of samples for preallocation
     subject_n_samples = np.zeros(len(imgs), dtype='int64')
     for i, img in enumerate(imgs):
-        this_n_samples = check_niimg_4d(img).shape[3]
+        this_n_samples = img.shape[3]
         if reduction_ratio == 'auto':
             subject_n_samples[i] = min(n_components,
                                        this_n_samples)
         else:
             subject_n_samples[i] = int(ceil(this_n_samples *
                                             reduction_ratio))
+
     data_list = Parallel(n_jobs=n_jobs)(
         delayed(_mask_and_reduce_single)(
             masker,
