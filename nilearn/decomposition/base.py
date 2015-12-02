@@ -13,7 +13,7 @@ from sklearn.utils import check_random_state
 from sklearn.utils.extmath import randomized_svd
 from .._utils.cache_mixin import CacheMixin, cache
 from .._utils.niimg import _safe_get_data
-from .._utils.niimg_conversions import check_niimg_4d
+from .._utils.niimg_conversions import check_niimg_4d, _iter_check_niimg
 from ..input_data import NiftiMapsMasker
 from ..input_data.masker_validation import check_embedded_nifti_masker
 
@@ -71,8 +71,8 @@ def mask_and_reduce(masker, imgs,
         Concatenation of reduced data.
     """
 
-    if not hasattr(imgs, '__iter__'):
-        imgs = [imgs]
+    imgs = _iter_check_niimg(imgs, atleast_4d='True', memory=memory,
+                             memory_level=memory_level)
 
     if reduction_ratio == 'auto':
         if n_components is None:
