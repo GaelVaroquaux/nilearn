@@ -80,4 +80,4 @@ for estimator, atlas in zip(estimators, components_imgs):
                     title="%s" % estimator.__class__.__name__,
                     figure=fig,
                     cut_coords=cut_coords, colorbar=False)
-    plt.show(fig)
+plt.show()
