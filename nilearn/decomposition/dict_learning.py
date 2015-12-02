@@ -130,7 +130,7 @@ class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
     def __init__(self, n_components=20,
                  n_epochs=1, alpha=1, reduction_ratio='auto', dict_init=None,
                  random_state=None,
-                 mask=None, smoothing_fwhm=None,
+                 mask=None, smoothing_fwhm=4,
                  standardize=True, detrend=True,
                  low_pass=None, high_pass=None, t_r=None,
                  target_affine=None, target_shape=None,

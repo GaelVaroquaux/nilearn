@@ -107,7 +107,7 @@ class CanICA(MultiPCA, CacheMixin):
       datasets", IEEE ISBI 2010, p. 1177
     """
 
-    def __init__(self, mask=None, n_components=20, smoothing_fwhm=None,
+    def __init__(self, mask=None, n_components=20, smoothing_fwhm=6,
                  do_cca=True,
                  threshold='auto',
                  n_init=10,
