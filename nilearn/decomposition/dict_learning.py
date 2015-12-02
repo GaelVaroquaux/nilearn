@@ -120,10 +120,10 @@ class DictLearning(BaseDecomposition, TransformerMixin, CacheMixin):
     References
     ----------
     * Gael Varoquaux et al.
-    Multi-subject dictionary learning to segment an atlas of brain spontaneous
-    activity
-    Information Processing in Medical Imaging, 2011, pp. 562-573,
-    Lecture Notes in Computer Science
+      Multi-subject dictionary learning to segment an atlas of brain
+      spontaneous activity
+      Information Processing in Medical Imaging, 2011, pp. 562-573,
+      Lecture Notes in Computer Science
 
     """
 

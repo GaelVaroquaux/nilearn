@@ -99,9 +99,11 @@ class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
         the `masker_` attribute.
     """
 
-    def __init__(self, n_components=20, do_cca=True,
+    def __init__(self, n_components=20,
+                 mask=None,
+                 smoothing_fwhm=None,
+                 do_cca=True,
                  random_state=None,
-                 mask=None, smoothing_fwhm=None,
                  standardize=False, detrend=False,
                  low_pass=None, high_pass=None, t_r=None,
                  target_affine=None, target_shape=None,
@@ -141,7 +143,7 @@ class MultiPCA(BaseDecomposition, TransformerMixin, CacheMixin):
             the affine is considered the same for all.
 
         confounds: CSV file path or 2D matrix
-            This parameter is passed to 2 * nilearn.signal.clean. Please see the
+            This parameter is passed to nilearn.signal.clean. Please see the
             related documentation for details
         """
         BaseDecomposition.fit(self, imgs)

@@ -100,5 +100,3 @@ def test_base_decomposition():
 
 
 # Score is tested in multi_pca
-def test_base_decomposition_score():
-    pass

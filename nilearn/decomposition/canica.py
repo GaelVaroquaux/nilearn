@@ -107,10 +107,11 @@ class CanICA(MultiPCA, CacheMixin):
       datasets", IEEE ISBI 2010, p. 1177
     """
 
-    def __init__(self, n_init=10, threshold='auto', n_components=20,
+    def __init__(self, mask=None, n_components=20, smoothing_fwhm=None,
                  do_cca=True,
+                 threshold='auto',
+                 n_init=10,
                  random_state=None,
-                 mask=None, smoothing_fwhm=None,
                  standardize=True, detrend=True,
                  low_pass=None, high_pass=None, t_r=None,
                  target_affine=None, target_shape=None,
@@ -135,6 +136,9 @@ class CanICA(MultiPCA, CacheMixin):
         self.n_init = n_init
 
     def _unmix_components(self):
+        """Core function of CanICA than rotate components_ to maximize
+        independance"""
+
         random_state = check_random_state(self.random_state)
 
         seeds = random_state.randint(np.iinfo(np.int32).max, size=self.n_init)
