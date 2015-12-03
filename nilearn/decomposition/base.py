@@ -74,8 +74,6 @@ def mask_and_reduce(masker, imgs,
     """
     if not hasattr(imgs, '__iter__'):
         imgs = [imgs]
-    imgs = list(_iter_check_niimg(imgs, atleast_4d='True', memory=memory,
-                             memory_level=memory_level))
 
     if reduction_ratio == 'auto':
         if n_components is None:
@@ -94,27 +92,28 @@ def mask_and_reduce(masker, imgs,
     if confounds is None:
         confounds = itertools.repeat(confounds)
 
-    # Precomputing number of samples for preallocation
-    subject_n_samples = np.zeros(len(imgs), dtype='int64')
-    for i, img in enumerate(imgs):
-        this_n_samples = img.shape[3]
-        if reduction_ratio == 'auto':
-            subject_n_samples[i] = min(n_components,
-                                       this_n_samples)
-        else:
-            subject_n_samples[i] = int(ceil(this_n_samples *
-                                            reduction_ratio))
+    if reduction_ratio == 'auto':
+        n_samples = n_components
+        reduction_ratio = None
+    else:
+        # We'll let _mask_and_reduce_single decide on the number of
+        # samples based on the reduction_ratio
+        n_samples = None
 
     data_list = Parallel(n_jobs=n_jobs)(
         delayed(_mask_and_reduce_single)(
             masker,
             img, confound,
-            n_samples,
+            reduction_ratio=reduction_ratio,
+            n_samples=n_samples,
             memory=memory,
             memory_level=memory_level,
             random_state=random_state
-        ) for img, confound, n_samples in zip(imgs, confounds,
-                                              subject_n_samples))
+        ) for img, confound in zip(imgs, confounds))
+
+    subject_n_samples = [subject_data.shape[0]
+                         for subject_data in data_list]
+
     n_samples = np.sum(subject_n_samples)
     n_voxels = np.sum(_safe_get_data(masker.mask_img_))
     data = np.empty((n_samples, n_voxels), order='F',
@@ -124,20 +123,35 @@ def mask_and_reduce(masker, imgs,
     for i, next_position in enumerate(np.cumsum(subject_n_samples)):
         data[current_position:next_position] = data_list[i]
         current_position = next_position
+        # Clear memory as fast as possible: remove the reference on
+        # the corresponding block of data
+        data_list[i] = None
     return data
 
 
 def _mask_and_reduce_single(masker,
                             img, confound,
-                            n_samples,
+                            reduction_ratio=None,
+                            n_samples=None,
                             memory=None,
                             memory_level=0,
                             random_state=None):
     """Utility function for multiprocessing from MaskReducer"""
     this_data = masker.transform(img, confound)
+    # Now get rid of the img as fast as possible, to free a
+    # reference count on it, and possibly free the corresponding
+    # data
+    del img
     random_state = check_random_state(random_state)
 
-    if n_samples <= this_data.shape[0] // 4:
+    data_n_samples = this_data.shape[0]
+    if reduction_ratio is None:
+        assert n_samples is not None
+        n_samples = min(n_samples, data_n_samples)
+    else:
+        n_samples = int(ceil(data_n_samples * reduction_ratio))
+
+    if n_samples <= data_n_samples // 4:
         U, S, _ = cache(randomized_svd, memory,
                         memory_level=memory_level,
                         func_memory_level=3)(this_data.T,
