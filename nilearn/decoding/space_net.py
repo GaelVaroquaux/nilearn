@@ -34,6 +34,7 @@ from ..input_data import NiftiMasker
 from .objective_functions import _unmask
 from .space_net_solvers import (tvl1_solver, _graph_net_logistic,
                                 _graph_net_squared_loss)
+from .social_sparsity import social_solver_with_l1
 
 
 # Volume of a standard (MNI152) brain mask in mm^3
@@ -179,7 +180,7 @@ def _univariate_feature_screening(
     return X, mask_, support
 
 
-def _space_net_alpha_grid(X, y, eps=1e-3, n_alphas=10, l1_ratio=1.,
+def _space_net_alpha_grid(X, y, eps=5e-3, n_alphas=10, l1_ratio=1.,
                           logistic=False):
     """Compute the grid of alpha values for TV-L1 and Graph-Net.
 
@@ -199,7 +200,7 @@ def _space_net_alpha_grid(X, y, eps=1e-3, n_alphas=10, l1_ratio=1.,
         and a spatial prior.
 
     eps : float, optional
-        Length of the path. ``eps=1e-3`` means that
+        Length of the path. ``eps=5e-3`` means that
         ``alpha_min / alpha_max = 1e-3``.
 
     n_alphas : int, optional
@@ -332,9 +333,10 @@ class _EarlyStoppingCallback(object):
 
 
 def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
-                solver_params, is_classif=False, n_alphas=10, eps=1E-3,
+                solver_params, is_classif=False, n_alphas=10, eps=5e-3,
                 key=None, debias=False, Xmean=None,
-                screening_percentile=20., verbose=1):
+                screening_percentile=20., verbose=1,
+                prefer_penalized=False):
     """Function to compute scores of different alphas in regression and
     classification used by CV objects
 
@@ -362,9 +364,9 @@ def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
         Constant that mixes L1 and TV (resp. Graph-Net) penalization.
         l1_ratio == 0: just smooth. l1_ratio == 1: just lasso.
 
-    eps : float, optional (default 1e-3)
-        Length of the path. For example, ``eps=1e-3`` means that
-        ``alpha_min / alpha_max = 1e-3``.
+    eps : float, optional (default 5e-3)
+        Length of the path. For example, ``eps=5e-3`` means that
+        ``alpha_min / alpha_max = 5e-3``.
 
     n_alphas : int, optional (default 10).
         Generate this number of alphas per regularization path.
@@ -373,8 +375,12 @@ def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
     solver : function handle
        See for example tv.TVl1Classifier documentation.
 
-    solver_params: dict
+    solver_params : dict
        Dictionary of param-value pairs to be passed to solver.
+
+    prefer_penalized : boolean, default: False
+        Whether to prefer heavily penalized or weakly penalized model
+        if model-selection is degenerate
     """
     if l1_ratios is None:
         raise ValueError("l1_ratios must be specified!")
@@ -449,7 +455,8 @@ def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
                 if (np.isfinite(score) and
                         (score > best_score
                          or (score == best_score and
-                             secondary_score > best_secondary_score))):
+                             not (prefer_penalized and
+                              secondary_score < best_secondary_score)))):
                     best_secondary_score = secondary_score
                     best_score = score
                     best_l1_ratio = l1_ratio
@@ -509,7 +516,8 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
     Parameters
     ----------
     penalty : string, optional (default 'graph-net')
-        Penalty to used in the model. Can be 'graph-net' or 'tv-l1'.
+        Penalty to used in the model. Can be 'graph-net', 'tv-l1',
+        or 'social'.
 
     loss : string, optional (default "mse")
         Loss to be used in the model. Must be an one of "mse", or "logistic".
@@ -534,9 +542,9 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
         Generate this number of alphas per regularization path.
         This parameter is mutually exclusive with the `alphas` parameter.
 
-    eps : float, optional (default 1e-3)
-        Length of the path. For example, ``eps=1e-3`` means that
-        ``alpha_min / alpha_max = 1e-3``
+    eps : float, optional (default 5e-3)
+        Length of the path. For example, ``eps=5e-3`` means that
+        ``alpha_min / alpha_max = 5e-3``
 
     mask : filename, niimg, NiftiMasker instance, optional default None)
         Mask to be used on data. If an instance of masker is passed,
@@ -643,7 +651,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
         Screening percentile corrected according to volume of mask,
         relative to the volume of standard brain.
     """
-    SUPPORTED_PENALTIES = ["graph-net", "tv-l1"]
+    SUPPORTED_PENALTIES = ["graph-net", "tv-l1", "social"]
     SUPPORTED_LOSSES = ["mse", "logistic"]
 
     def __init__(self, penalty="graph-net", is_classif=False, loss=None,
@@ -651,7 +659,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
                  target_affine=None, target_shape=None, low_pass=None,
                  high_pass=None, t_r=None, max_iter=1000, tol=5e-4,
                  memory=Memory(None), memory_level=1,
-                 standardize=True, verbose=1, n_jobs=1, eps=1e-3,
+                 standardize=True, verbose=1, n_jobs=1, eps=5e-3,
                  cv=8, fit_intercept=True, screening_percentile=20.,
                  debias=False):
         self.penalty = penalty
@@ -800,11 +808,18 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
                 solver = _graph_net_squared_loss
             else:
                 solver = _graph_net_logistic
-        else:
+        elif self.penalty == 'tv-l1':
             if not self.is_classif or loss == "mse":
                 solver = partial(tvl1_solver, loss="mse")
             else:
                 solver = partial(tvl1_solver, loss="logistic")
+        elif self.penalty == 'social':
+            if not self.is_classif or loss == "mse":
+                solver = partial(social_solver_with_l1, loss="mse")
+            else:
+                solver = partial(social_solver_with_l1, loss="logistic")
+        else:
+            raise ValueError
 
         # generate fold indices
         case1 = (None in [alphas, l1_ratios]) and self.n_alphas > 1
@@ -855,6 +870,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
                 is_classif=self.loss == "logistic", key=(cls, fold),
                 debias=self.debias, verbose=self.verbose,
                 screening_percentile=self.screening_percentile_,
+                prefer_penalized=self.penalty == 'social',
                 ) for cls in range(n_problems) for fold in range(n_folds)):
             self.best_model_params_.append((best_alpha, best_l1_ratio))
             self.alpha_grids_.append(alphas)
@@ -990,9 +1006,9 @@ class SpaceNetClassifier(BaseSpaceNet):
         Generate this number of alphas per regularization path.
         This parameter is mutually exclusive with the `alphas` parameter.
 
-    eps : float, optional (default 1e-3)
-        Length of the path. For example, ``eps=1e-3`` means that
-        ``alpha_min / alpha_max = 1e-3``.
+    eps : float, optional (default 5e-3)
+        Length of the path. For example, ``eps=5e-3`` means that
+        ``alpha_min / alpha_max = 5e-3``.
 
     mask : filename, niimg, NiftiMasker instance, optional default None)
         Mask to be used on data. If an instance of masker is passed,
@@ -1102,7 +1118,7 @@ class SpaceNetClassifier(BaseSpaceNet):
                  target_affine=None, target_shape=None, low_pass=None,
                  high_pass=None, t_r=None, max_iter=1000, tol=1e-4,
                  memory=Memory(None), memory_level=1, standardize=True,
-                 verbose=1, n_jobs=1, eps=1e-3,
+                 verbose=1, n_jobs=1, eps=5e-3,
                  cv=8, fit_intercept=True, screening_percentile=20.,
                  debias=False):
         super(SpaceNetClassifier, self).__init__(
@@ -1178,9 +1194,9 @@ class SpaceNetRegressor(BaseSpaceNet):
         Generate this number of alphas per regularization path.
         This parameter is mutually exclusive with the `alphas` parameter.
 
-    eps : float, optional (default 1e-3)
-        Length of the path. For example, ``eps=1e-3`` means that
-        ``alpha_min / alpha_max = 1e-3``
+    eps : float, optional (default 5e-3)
+        Length of the path. For example, ``eps=5e-3`` means that
+        ``alpha_min / alpha_max = 5e-3``
 
     mask : filename, niimg, NiftiMasker instance, optional default None)
         Mask to be used on data. If an instance of masker is passed,
@@ -1283,7 +1299,7 @@ class SpaceNetRegressor(BaseSpaceNet):
                  n_alphas=10, mask=None, target_affine=None,
                  target_shape=None, low_pass=None, high_pass=None, t_r=None,
                  max_iter=1000, tol=1e-4, memory=Memory(None), memory_level=1,
-                 standardize=True, verbose=1, n_jobs=1, eps=1e-3, cv=8,
+                 standardize=True, verbose=1, n_jobs=1, eps=5e-3, cv=8,
                  fit_intercept=True, screening_percentile=20., debias=False):
         super(SpaceNetRegressor, self).__init__(
             penalty=penalty, is_classif=False, l1_ratios=l1_ratios,
