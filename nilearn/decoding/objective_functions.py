@@ -12,7 +12,7 @@ Common functions and base classes.
 
 from functools import partial
 import numpy as np
-from scipy import linalg
+from sklearn.utils.extmath import randomized_svd
 
 
 def spectral_norm_squared(X):
@@ -36,7 +36,8 @@ def spectral_norm_squared(X):
     """
     # On big matrices like those that we have in neuroimaging, svdvals
     # is faster than a power iteration (even when using arpack's)
-    return linalg.svdvals(X)[0] ** 2
+    # and randomized_svd is even faster
+    return randomized_svd(X, 3)[1][0] ** 2
 
 
 def _logistic_loss_lipschitz_constant(X):
