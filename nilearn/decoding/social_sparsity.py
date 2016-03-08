@@ -43,7 +43,7 @@ def fista(f1_grad, f2_prox, lipschitz_constant, w_size,
 
     init : dict-like, optional (default None)
         Dictionary of initialization parameters. Possible keys are 'w',
-        'stepsize', 'z', 't', 'dgap_factor', etc.
+        'stepsize', 'z', 't', etc.
 
     callback : callable(dict) -> bool
         Function called on every iteration. If it returns True, then the loop
@@ -180,7 +180,7 @@ def _prox_social_sparsity(img, alpha):
     weights[1:-1, 1:-1, 1:-1] = grp_norms
     shrink = np.zeros(img.shape)
     img_nz = img.nonzero()
-    shrink[img_nz] = np.maximum(1 - alpha / weights[img_nz], 0)
+    shrink[img_nz] = (1 - alpha / weights[img_nz]).clip(0)
 
     return img * shrink
 
@@ -241,11 +241,6 @@ def social_solver(X, y, alpha, mask, loss=None, max_iter=100,
         Solver information, for warm start.
 
     """
-    # To avoid border effects with social sparsity:
-    larger_mask = np.zeros((mask.shape[0] + 2, mask.shape[1] + 2,
-                            mask.shape[2] + 2), dtype=np.bool)
-    larger_mask[1:-1, 1:-1, 1:-1] = mask
-
     # sanitize loss
     if loss not in ["mse", "logistic"]:
         raise ValueError("'%s' loss not implemented. Should be 'mse' or "
@@ -272,15 +267,15 @@ def social_solver(X, y, alpha, mask, loss=None, max_iter=100,
     # proximal operator of nonsmooth proximable part of energy (f2)
     if loss == "mse":
         def f2_prox(w, stepsize):
-            out = _prox_social_sparsity(_unmask(w, larger_mask),
+            out = _prox_social_sparsity(_unmask(w, mask),
                                         alpha * stepsize)
-            return out[larger_mask]
+            return out[mask]
     else:
         # Deal with intercept
         def f2_prox(w, stepsize):
-            out = _prox_social_sparsity(_unmask(w[:-1], larger_mask),
+            out = _prox_social_sparsity(_unmask(w[:-1], mask),
                                         alpha * stepsize)
-            return np.append(out[larger_mask], w[-1])
+            return np.append(out[mask], w[-1])
 
     # invoke FISTA solver
     w, obj, init = fista(
