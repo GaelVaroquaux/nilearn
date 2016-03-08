@@ -280,7 +280,7 @@ def social_solver(X, y, alpha, mask, loss=None, max_iter=100,
     # invoke FISTA solver
     w, obj, init = fista(
         f1_grad, f2_prox, lipschitz_constant, w_size,
-        tol=10*tol, init=init, verbose=verbose,
+        tol=tol, init=init, verbose=verbose,
         max_iter=max_iter, callback=callback)
 
     return w, obj, init

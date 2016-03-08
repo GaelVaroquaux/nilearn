@@ -161,6 +161,7 @@ def mfista(f1_grad, f2_prox, total_energy, lipschitz_constant, w_size,
     prox_info = dict(converged=True)
     stepsize = 1. / lipschitz_constant
     history = []
+    dw_history = []
     w_old = w.copy()
 
     # FISTA loop
@@ -174,6 +175,21 @@ def mfista(f1_grad, f2_prox, total_energy, lipschitz_constant, w_size,
                   i + 1, max_iter, old_energy, energy_delta))
         if callback and callback(locals()):
             break
+
+        # Now check our stopping criteria
+        if not (i % 5):
+            # Every 5 iterations, recompute a scale
+            scale = np.abs(w).max()
+            # Regularize the scale if it gets very small
+            scale = max(scale, 1e-7)
+        dw = np.abs(w - w_old).max() / scale
+        dw_history.append(dw)
+
+        if i > 5 and max(dw_history[-5:]) < tol:
+            if verbose:
+                print("\tConverged (|dw| < %g)" % tol)
+            break
+
         if np.abs(energy_delta) < tol:
             if verbose:
                 print("\tConverged (|dE| < %g)" % tol)
