@@ -167,15 +167,6 @@ def mfista(f1_grad, f2_prox, total_energy, lipschitz_constant, w_size,
     # FISTA loop
     for i in range(max_iter):
         history.append(old_energy)
-        w_old[:] = w
-
-        # invoke callback
-        if verbose:
-            print('mFISTA: Iteration % 2i/%2i: E = %7.4e, dE % 4.4e' % (
-                  i + 1, max_iter, old_energy, energy_delta))
-        if callback and callback(locals()):
-            break
-
         # Now check our stopping criteria
         if not (i % 5):
             # Every 5 iterations, recompute a scale
@@ -184,6 +175,15 @@ def mfista(f1_grad, f2_prox, total_energy, lipschitz_constant, w_size,
             scale = max(scale, 1e-7)
         dw = np.abs(w - w_old).max() / scale
         dw_history.append(dw)
+
+        w_old[:] = w
+
+        # invoke callback
+        if verbose:
+            print('mFISTA: Iteration % 2i/%2i: E = %7.4e, dE % 4.4e' % (
+                  i + 1, max_iter, old_energy, energy_delta))
+        if callback and callback(locals()):
+            break
 
         if i > 5 and max(dw_history[-5:]) < tol:
             if verbose:
