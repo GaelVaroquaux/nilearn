@@ -9,7 +9,7 @@ from math import sqrt
 import numpy as np
 
 from .fista import _check_lipschitz_continuous
-from .space_net_solvers import (_unmask, _logistic_loss_grad,
+from .objective_functions import (_unmask, _logistic_loss_grad,
     _logistic_loss_lipschitz_constant, _squared_loss_grad,
     spectral_norm_squared)
 
@@ -17,7 +17,7 @@ from .space_net_solvers import (_unmask, _logistic_loss_grad,
 def fista(f1_grad, f2_prox, lipschitz_constant, w_size,
            init=None, max_iter=1000, tol=1e-4,
            check_lipschitz=False, callback=None,
-           verbose=2, fista=True):
+           verbose=2, fista=False):
     """Generic FISTA solver.
 
     Minimizes the a sum `f + g` of two convex functions f (smooth)
@@ -131,8 +131,8 @@ def fista(f1_grad, f2_prox, lipschitz_constant, w_size,
     return w, history, init
 
 
-def _neighboorhood_norm(img):
-    " Return the squared norm of 3x3x3 neighboorhoods "
+def _neighboorhood_norm(img, weights=np.array((.2, .6, .2))):
+    " Return the squared norm averaged on 3x3x3 neighboorhoods "
     # Our stride tricks only work on C-contiguous arrays
     assert img.flags['C_CONTIGUOUS']
 
@@ -146,7 +146,7 @@ def _neighboorhood_norm(img):
     strides = grp_norms.strides + (grp_norms.strides[-1], )
     grp_norms = np.lib.stride_tricks.as_strided(grp_norms, shape=shape,
                                                 strides=strides)
-    grp_norms = grp_norms.sum(axis=-1)
+    grp_norms = np.average(grp_norms, axis=-1, weights=weights)
 
     # Now sum along the 2nd to last axis
     shape = (grp_norms.shape[0], grp_norms.shape[1] - 2, 3,
@@ -155,7 +155,7 @@ def _neighboorhood_norm(img):
                grp_norms.strides[1], grp_norms.strides[2])
     grp_norms = np.lib.stride_tricks.as_strided(grp_norms, shape=shape,
                                                 strides=strides)
-    grp_norms = grp_norms.sum(axis=2)
+    grp_norms = np.average(grp_norms, axis=2, weights=weights)
 
     # And now the first axis
     shape = (grp_norms.shape[0] - 2, 3, grp_norms.shape[1],
@@ -164,7 +164,7 @@ def _neighboorhood_norm(img):
                grp_norms.strides[1], grp_norms.strides[2])
     grp_norms = np.lib.stride_tricks.as_strided(grp_norms, shape=shape,
                                                 strides=strides)
-    grp_norms = grp_norms.sum(axis=1)
+    grp_norms = np.average(grp_norms, axis=1, weights=weights)
 
     return grp_norms
 
@@ -173,7 +173,6 @@ def _prox_social_sparsity(img, alpha):
     """Social sparsity on 3x3x3 groups, as defined by eq 4 of Kowalski et
     al, 'Social Sparsity...'"""
     grp_norms = _neighboorhood_norm(img)
-    grp_norms /= 27
     grp_norms = np.sqrt(grp_norms)
     # To avoid side effects, assign the raw img values on the side
     weights = np.abs(img)

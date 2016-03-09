@@ -10,11 +10,11 @@ from ..proximal_operators import _prox_l1
 
 def test_neighboorhood_norm():
     # A trivial test: check that we are getting the size of the groups
-    # (3x3x3), if we input only ones
+    # ones, if we input only ones
     img1 = np.ones((7, 6, 5))
     grp_norms = _neighboorhood_norm(img1)
     np.testing.assert_array_equal(grp_norms,
-                                  3 * 3 * 3 * np.ones((5, 4, 3)))
+                                  np.ones((5, 4, 3)))
 
     # Second somewhat trivial test: check that if all the elements of an
     # array, are different, all the local average are different (to check
