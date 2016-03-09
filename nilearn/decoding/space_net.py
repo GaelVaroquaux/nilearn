@@ -437,7 +437,6 @@ def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
             if best_alpha is None:
                 best_alpha = alphas_[0]
             init = None
-            first_model_selection = True
             for alpha in alphas_:
                 # setup callback mechanism for early stopping
                 early_stopper = _EarlyStoppingCallback(
@@ -453,32 +452,16 @@ def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
                 # correlations
                 score, secondary_score = early_stopper.test_score(w)
                 this_test_scores.append(score)
-
-                # Below are our model-selection criteria: if we don't
-                # accept the model, we continue to the next model
-                if not np.isfinite(score):
-                    continue
-                if score < best_score:
-                    # Scores are bigger is better
-                    continue
-                if score == best_score:
-                    if secondary_score <= best_secondary_score:
-                        continue
-                    if prefer_penalized:
-                        # We stop at the second best model found, not
-                        # the first one, to avoid overpenalizing
-                        # indeed, the first selection is often very close
-                        # to the empty model
-                        if first_model_selection:
-                            first_model_selection = False
-                        else:
-                            continue
-                best_secondary_score = secondary_score
-                best_score = score
-                best_l1_ratio = l1_ratio
-                best_alpha = alpha
-                best_init = init.copy()
-
+                if (np.isfinite(score) and
+                        (score > best_score
+                         or (score == best_score and
+                             not (prefer_penalized and
+                              secondary_score < best_secondary_score)))):
+                    best_secondary_score = secondary_score
+                    best_score = score
+                    best_l1_ratio = l1_ratio
+                    best_alpha = alpha
+                    best_init = init.copy()
             all_test_scores.append(this_test_scores)
     else:
         if alphas is None:
