@@ -63,9 +63,10 @@ def test_space_net_alpha_grid_same_as_sk():
         iris = load_iris()
         X = iris.data
         y = iris.target
-        np.testing.assert_almost_equal(_space_net_alpha_grid(
-            X, y, n_alphas=5), X.shape[0] * _alpha_grid(X, y, n_alphas=5,
-                                                        fit_intercept=False))
+        np.testing.assert_almost_equal(
+            _space_net_alpha_grid(X, y, n_alphas=5, eps=1e-3),
+            X.shape[0] * _alpha_grid(X, y, n_alphas=5, eps=1e-3,
+                                    fit_intercept=False))
     except ImportError:
         raise SkipTest
 
