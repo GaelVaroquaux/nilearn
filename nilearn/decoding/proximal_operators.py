@@ -16,8 +16,8 @@ def _prox_l1(y, alpha, copy=True):
     shrink = np.zeros(y.shape)
     if copy:
         y = y.copy()
-    y_nz = y.nonzero()
-    shrink[y_nz] = np.maximum(1 - alpha / np.abs(y[y_nz]), 0)
+    y_nz = (y != 0)
+    shrink[y_nz] = (1 - alpha / np.abs(y[y_nz])).clip(0)
     y *= shrink
     return y
 

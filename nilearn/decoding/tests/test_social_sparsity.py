@@ -8,6 +8,7 @@ from nose.tools import assert_equal
 from ..social_sparsity import _neighboorhood_norm, _prox_social_sparsity
 from ..proximal_operators import _prox_l1
 
+
 def test_neighboorhood_norm():
     # A trivial test: check that we are getting the size of the groups
     # ones, if we input only ones
