@@ -132,7 +132,7 @@ def fista(f1_grad, f2_prox, lipschitz_constant, w_size,
     return w, history, init
 
 
-def _neighboorhood_norm(img, side_weights=.5):
+def _neighboorhood_norm(img, side_weights=.7):
     " Return the squared norm averaged on 3x3x3 neighboorhoods "
     # Our stride tricks only work on C-contiguous arrays
 

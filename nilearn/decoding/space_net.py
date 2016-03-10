@@ -456,7 +456,8 @@ def path_scores(solver, X, y, mask, alphas, l1_ratios, train, test,
                         (score > best_score
                          or (score == best_score and
                              not (prefer_penalized and
-                              secondary_score < best_secondary_score)))):
+                              secondary_score < best_secondary_score))
+                              )):
                     best_secondary_score = secondary_score
                     best_score = score
                     best_l1_ratio = l1_ratio
@@ -870,7 +871,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
                 is_classif=self.loss == "logistic", key=(cls, fold),
                 debias=self.debias, verbose=self.verbose,
                 screening_percentile=self.screening_percentile_,
-                prefer_penalized=self.penalty == 'social',
+                prefer_penalized=(self.penalty == 'social'),
                 ) for cls in range(n_problems) for fold in range(n_folds)):
             self.best_model_params_.append((best_alpha, best_l1_ratio))
             self.alpha_grids_.append(alphas)
