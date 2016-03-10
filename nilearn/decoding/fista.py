@@ -190,7 +190,7 @@ def mfista(f1_grad, f2_prox, total_energy, lipschitz_constant, w_size,
                 print("\tConverged (|dw| < %g)" % tol)
             break
 
-        if np.abs(energy_delta) < tol:
+        if False and np.abs(energy_delta) < tol:
             if verbose:
                 print("\tConverged (|dE| < %g)" % tol)
             break
