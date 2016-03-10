@@ -539,9 +539,11 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
         If None or list of floats is provided, then the best value will be
         selected by cross-validation.
 
-    n_alphas : int, optional (default 10).
+    n_alphas : int, optional (default 'auto').
         Generate this number of alphas per regularization path.
         This parameter is mutually exclusive with the `alphas` parameter.
+        If it is set to 'auto', it 5 values are used when eps > 1e3 and
+        10 elsewhere.
 
     eps : float, optional (default 5e-3)
         Length of the path. For example, ``eps=5e-3`` means that
@@ -656,7 +658,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
     SUPPORTED_LOSSES = ["mse", "logistic"]
 
     def __init__(self, penalty="graph-net", is_classif=False, loss=None,
-                 l1_ratios=.5, alphas=None, n_alphas=10, mask=None,
+                 l1_ratios=.5, alphas=None, n_alphas='auto', mask=None,
                  target_affine=None, target_shape=None, low_pass=None,
                  high_pass=None, t_r=None, max_iter=1000, tol=1e-3,
                  memory=Memory(None), memory_level=1,
@@ -822,8 +824,19 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
         else:
             raise ValueError
 
+        eps = self.eps
+        if self.is_classif and eps == 'auto':
+            if self.penalty == 'social':
+                eps = 5e-2
+            else:
+                eps = 5e-3
+
+        n_alphas = self.n_alphas
+        if n_alphas == 'auto':
+            n_alphas = 5 if eps > 1e-3 else 10
+
         # generate fold indices
-        case1 = (None in [alphas, l1_ratios]) and self.n_alphas > 1
+        case1 = (None in [alphas, l1_ratios]) and n_alphas > 1
         case2 = (not alphas is None) and min(len(l1_ratios), len(alphas)) > 1
         if case1 or case2:
             self.cv_ = list(check_cv(self.cv, X=X, y=y,
@@ -867,7 +880,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
                 delayed(self._cache(path_scores, func_memory_level=2))(
                 solver, X, y[:, cls] if n_problems > 1 else y, self.mask_,
                 alphas, l1_ratios, self.cv_[fold][0], self.cv_[fold][1],
-                solver_params, n_alphas=self.n_alphas, eps=self.eps,
+                solver_params, n_alphas=n_alphas, eps=eps,
                 is_classif=self.loss == "logistic", key=(cls, fold),
                 debias=self.debias, verbose=self.verbose,
                 screening_percentile=self.screening_percentile_,
@@ -1003,13 +1016,17 @@ class SpaceNetClassifier(BaseSpaceNet):
         If None or list of floats is provided, then the best value will be
         selected by cross-validation.
 
-    n_alphas : int, optional (default 10).
+    n_alphas : int, optional (default 'auto').
         Generate this number of alphas per regularization path.
         This parameter is mutually exclusive with the `alphas` parameter.
+        If it is set to 'auto', it 5 values are used when eps > 1e3 and
+        10 elsewhere.
 
     eps : float, optional (default 5e-3)
         Length of the path. For example, ``eps=5e-3`` means that
         ``alpha_min / alpha_max = 5e-3``.
+        The 'auto' value uses eps=5e-2 for social sparsity and eps=5e-3
+        elsewhere.
 
     mask : filename, niimg, NiftiMasker instance, optional default None)
         Mask to be used on data. If an instance of masker is passed,
@@ -1115,11 +1132,11 @@ class SpaceNetClassifier(BaseSpaceNet):
     """
 
     def __init__(self, penalty="graph-net", loss="logistic",
-                 l1_ratios=.5, alphas=None, n_alphas=10, mask=None,
+                 l1_ratios=.5, alphas=None, n_alphas='auto', mask=None,
                  target_affine=None, target_shape=None, low_pass=None,
                  high_pass=None, t_r=None, max_iter=1000, tol=1e-3,
                  memory=Memory(None), memory_level=1, standardize=True,
-                 verbose=1, n_jobs=1, eps=5e-3,
+                 verbose=1, n_jobs=1, eps='auto',
                  cv=8, fit_intercept=True, screening_percentile=20.,
                  debias=False):
         super(SpaceNetClassifier, self).__init__(
@@ -1191,9 +1208,11 @@ class SpaceNetRegressor(BaseSpaceNet):
         If None or list of floats is provided, then the best value will be
         selected by cross-validation.
 
-    n_alphas : int, optional (default 10).
+    n_alphas : int, optional (default 'auto').
         Generate this number of alphas per regularization path.
         This parameter is mutually exclusive with the `alphas` parameter.
+        If it is set to 'auto', it 5 values are used when eps > 1e3 and
+        10 elsewhere.
 
     eps : float, optional (default 5e-3)
         Length of the path. For example, ``eps=5e-3`` means that
@@ -1297,7 +1316,7 @@ class SpaceNetRegressor(BaseSpaceNet):
     """
 
     def __init__(self, penalty="graph-net", l1_ratios=.5, alphas=None,
-                 n_alphas=10, mask=None, target_affine=None,
+                 n_alphas='auto', mask=None, target_affine=None,
                  target_shape=None, low_pass=None, high_pass=None, t_r=None,
                  max_iter=1000, tol=1e-3, memory=Memory(None), memory_level=1,
                  standardize=True, verbose=1, n_jobs=1, eps=5e-3, cv=8,
