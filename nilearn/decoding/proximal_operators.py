@@ -7,8 +7,27 @@
 # License: simplified BSD
 
 from math import sqrt
+from functools import partial
+
 import numpy as np
+from scipy import linalg
+
 from .objective_functions import _tv_l1_from_gradient, _div_id, _gradient_id
+
+np_version = []
+for x in np.__version__.split('.'):
+    try:
+        np_version.append(int(x))
+    except ValueError:
+        # x may be of the form dev-1ea1592
+        np_version.append(x)
+np_version = tuple(np_version)
+
+# Newer NumPy has a ravel that needs less copying.
+if np_version < (1, 7, 1):
+    _ravel = np.ravel
+else:
+    _ravel = partial(np.ravel, order='K')
 
 
 def _prox_l1(y, alpha, copy=True):
@@ -168,6 +187,7 @@ def _prox_tvl1(input_img, l1_ratio=.05, weight=50, dgap_tol=5.e-5, x_tol=None,
     i = 0
     lipschitz_constant = 1.1 * (4 * input_img.ndim * (1 - l1_ratio)
                                 ** 2 + l1_ratio ** 2)
+    step_size = 1. / (lipschitz_constant * weight)
 
     # negated_output is the negated primal variable in the optimization
     # loop
@@ -194,13 +214,24 @@ def _prox_tvl1(input_img, l1_ratio=.05, weight=50, dgap_tol=5.e-5, x_tol=None,
     # A boolean to control if we are going to do a fista step
     fista_step = fista
 
+    # axpy blas routine: fast y <- a*x + y
+    inplace_add_mult, = linalg.get_blas_funcs(('axpy',), (grad_aux, ))
+
     while i < max_iter:
+
         grad_tmp = _gradient_id(negated_output, l1_ratio=l1_ratio)
-        grad_tmp *= 1. / (lipschitz_constant * weight)
-        grad_aux += grad_tmp
+        # use blas to implement grad_aux += step_size * grad_tmp
+        grad_aux = inplace_add_mult(_ravel(grad_tmp),
+                                        _ravel(grad_aux), a=step_size)
+        # We have ravelled, we need to unravel
+        grad_aux.shape = grad_tmp.shape
         grad_tmp = _projector_on_tvl1_dual(
             grad_aux, l1_ratio
         )
+
+        # Carefull, in the next few lines, grad_tmp and grad_aux are a
+        # view on the same array, as projector_on_dual returns a view
+        # on the input array
 
         # Careful, in the next few lines, grad_tmp and grad_aux are a
         # view on the same array, as _projector_on_tvl1_dual returns a view

@@ -1,7 +1,9 @@
 import itertools
-from nose.tools import assert_true
+from nose.tools import assert_true, assert_equal
+
 import numpy as np
-from nilearn.decoding.proximal_operators import _prox_l1, _prox_tvl1
+
+from nilearn.decoding.proximal_operators import _prox_l1, _prox_tvl1, _ravel
 
 
 def test_prox_l1_nonexpansiveness(n_features=10):
@@ -20,7 +22,6 @@ def test_prox_l1_nonexpansiveness(n_features=10):
 
 def test_prox_tvl1_approximates_prox_l1_for_lasso(size=15, random_state=42,
                                                   decimal=4, dgap_tol=1e-7):
-
     rng = np.random.RandomState(random_state)
 
     l1_ratio = 1.  # pure LASSO
@@ -38,3 +39,22 @@ def test_prox_tvl1_approximates_prox_l1_for_lasso(size=15, random_state=42,
             # results shoud be close in l-infinity norm
             np.testing.assert_almost_equal(np.abs(a - b).max(),
                                            0., decimal=decimal)
+
+
+def test_ravel():
+    # Test that _ravel doesn't copy
+    for transpose in (True, False):
+        a = np.arange(16)
+        a = a.reshape((4, 4))
+        if transpose:
+            a = a.T
+        assert_equal(a[0, 0], 0)
+        b = _ravel(a)
+        if not transpose:
+            np.testing.assert_array_equal(b, a.ravel())
+        # Check that we have a view indeed
+        b += 1
+        assert_equal(a[0, 0], 1)
+
+
+
