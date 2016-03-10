@@ -12,15 +12,18 @@ from ..proximal_operators import _prox_l1
 def test_neighboorhood_norm():
     # A trivial test: check that we are getting the size of the groups
     # ones, if we input only ones
-    img1 = np.ones((7, 6, 5))
+    shape = (7, 6, 5)
+    img1 = np.ones(shape)
     grp_norms = _neighboorhood_norm(img1)
-    np.testing.assert_array_equal(grp_norms,
-                                  np.ones((5, 4, 3)))
+    np.testing.assert_array_almost_equal(grp_norms,
+                                         np.ones(shape), decimal=10)
 
     # Second somewhat trivial test: check that if all the elements of an
     # array, are different, all the local average are different (to check
     # that we are not summing in the same direction twice
-    img2 = np.arange(7 * 6 * 5).reshape((7, 6, 5))
+    img2 = np.arange(np.prod(shape)).reshape(shape).astype(np.float)
+    # Add a transendant scaling factor, to avoid aliasing
+    img2 *= np.pi
     grp_norms = _neighboorhood_norm(img2)
     assert_equal(np.unique(grp_norms).size, grp_norms.size)
 

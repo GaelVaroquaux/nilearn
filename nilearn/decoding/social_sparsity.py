@@ -133,42 +133,75 @@ def fista(f1_grad, f2_prox, lipschitz_constant, w_size,
 
 
 def _neighboorhood_norm(img, side_weights=.7):
-    " Return the squared norm averaged on 3x3x3 neighboorhoods "
+    " Return the squared norm averaged on 3D 6-neighboorhood"
     # Our stride tricks only work on C-contiguous arrays
 
     # Compute the norm on the groups
     grp_norms = img ** 2
     weighted_grps = side_weights * grp_norms
     # Sum along the first axis:
-    grp_norms[1:-1] += weighted_grps[2:]
-    grp_norms[1:-1] += weighted_grps[:-2]
+    grp_norms[:-1] += weighted_grps[1:]
+    grp_norms[1:] += weighted_grps[:-1]
 
     # Sum along the second axis:
-    grp_norms[:, 1:-1] += weighted_grps[:, 2:]
-    grp_norms[:, 1:-1] += weighted_grps[:, :-2]
+    grp_norms[:, :-1] += weighted_grps[:, 1:]
+    grp_norms[:, 1:] += weighted_grps[:, :-1]
 
     # Sum along the third axis:
-    grp_norms[:, :, 1:-1] += weighted_grps[:, :, 2:]
-    grp_norms[:, :, 1:-1] += weighted_grps[:, :, :-2]
+    grp_norms[:, :, :-1] += weighted_grps[:, :, 1:]
+    grp_norms[:, :, 1:] += weighted_grps[:, :, :-1]
 
     # Normalization factor, so that everything sums to 1
-    factor = (1 + 3 * 2 * side_weights)# ** 3
-    grp_norms /= factor
+    # For 6 neighboors
+    factor = (1 + 6 * side_weights)
+    grp_norms[1:-1, 1:-1, 1:-1] /= factor
 
-    return grp_norms[1:-1, 1:-1, 1:-1]
+    # Now the edges (only 3% of the time is spent below for large arrays)
+    # For 5 neighboors (6 faces of a cube)
+    factor = (1 + 5 * side_weights)
+    grp_norms[   0, 1:-1, 1:-1] /= factor
+    grp_norms[  -1, 1:-1, 1:-1] /= factor
+    grp_norms[1:-1,    0, 1:-1] /= factor
+    grp_norms[1:-1,   -1, 1:-1] /= factor
+    grp_norms[1:-1, 1:-1,    0] /= factor
+    grp_norms[1:-1, 1:-1,   -1] /= factor
+    # For 4 neighboors (12 edges of a cube)
+    factor = (1 + 4 * side_weights)
+    grp_norms[   0,    0, 1:-1] /= factor
+    grp_norms[   0,   -1, 1:-1] /= factor
+    grp_norms[  -1,    0, 1:-1] /= factor
+    grp_norms[  -1,   -1, 1:-1] /= factor
+    grp_norms[1:-1,    0,    0] /= factor
+    grp_norms[1:-1,    0,   -1] /= factor
+    grp_norms[1:-1,   -1,    0] /= factor
+    grp_norms[1:-1,   -1,   -1] /= factor
+    grp_norms[   0, 1:-1,    0] /= factor
+    grp_norms[   0, 1:-1,   -1] /= factor
+    grp_norms[  -1, 1:-1,    0] /= factor
+    grp_norms[  -1, 1:-1,   -1] /= factor
+    # For 3 neighboors (8 vertices of a cube)
+    factor = (1 + 3 * side_weights)
+    grp_norms[ 0,  0,  0] /= factor
+    grp_norms[ 0, -1,  0] /= factor
+    grp_norms[-1,  0,  0] /= factor
+    grp_norms[-1, -1,  0] /= factor
+    grp_norms[ 0,  0, -1] /= factor
+    grp_norms[ 0, -1, -1] /= factor
+    grp_norms[-1,  0, -1] /= factor
+    grp_norms[-1, -1, -1] /= factor
+
+    return grp_norms
 
 
 def _prox_social_sparsity(img, alpha):
     """Social sparsity on 3x3x3 groups, as defined by eq 4 of Kowalski et
     al, 'Social Sparsity...'"""
     grp_norms = _neighboorhood_norm(img)
-    weights = np.abs(img)
     # To avoid side effects, assign the raw img values on the side
-    grp_norms = np.sqrt(grp_norms, out=weights[1:-1, 1:-1, 1:-1])
-    #weights[1:-1, 1:-1, 1:-1] = grp_norms
+    grp_norms = np.sqrt(grp_norms, out=grp_norms)
     shrink = np.zeros(img.shape)
     img_nz = (img != 0)
-    shrink[img_nz] = (1 - alpha / weights[img_nz]).clip(0)
+    shrink[img_nz] = (1 - alpha / grp_norms[img_nz]).clip(0)
 
     return img * shrink
 
@@ -233,7 +266,6 @@ def social_solver(X, y, alpha, mask, loss=None, max_iter=100,
     if loss not in ["mse", "logistic"]:
         raise ValueError("'%s' loss not implemented. Should be 'mse' or "
                          "'logistic" % loss)
-
     # in logistic regression, we fit the intercept explicitly
     w_size = X.shape[1] + int(loss == "logistic")
 
