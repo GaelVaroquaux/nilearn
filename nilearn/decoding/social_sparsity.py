@@ -200,7 +200,7 @@ def _prox_social_sparsity(img, alpha):
     # To avoid side effects, assign the raw img values on the side
     grp_norms = np.sqrt(grp_norms, out=grp_norms)
     shrink = np.zeros(img.shape)
-    img_nz = (img != 0)
+    img_nz = (grp_norms > 1e-10)
     shrink[img_nz] = (1 - alpha / grp_norms[img_nz]).clip(0)
 
     return img * shrink
