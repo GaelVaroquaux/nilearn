@@ -743,7 +743,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
         else:
             self._set_intercept(self.Xmean_, self.ymean_, self.Xstd_)
 
-    def fit(self, X, y):
+    def fit(self, X, y, confounds=None):
         """Fit the learner
 
         Parameters
@@ -783,7 +783,7 @@ class BaseSpaceNet(LinearModel, RegressorMixin, CacheMixin):
                                        high_pass=self.high_pass,
                                        mask_strategy='epi', t_r=self.t_r,
                                        memory=self.memory_)
-        X = self.masker_.fit_transform(X)
+        X = self.masker_.fit_transform(X, confounds=confounds)
 
         # misc
         self.Xmean_ = X.mean(axis=0)
