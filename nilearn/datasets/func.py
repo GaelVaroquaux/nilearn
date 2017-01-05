@@ -1673,16 +1673,16 @@ def fetch_cobre(n_subjects=10, data_dir=None, url=None, verbose=1):
                  description=fdescr)
 
 
-def fetch_surf_nki_enhanced(n_subjects=30, data_dir=None,
+def fetch_surf_nki_enhanced(n_subjects=10, data_dir=None,
                             url=None, resume=True, verbose=1):
     """Download and load the NKI enhanced resting-state dataset,
-       preprocessed and projected to the surface.
+       preprocessed and projected to the fsaverage5 space surface.
 
     Parameters
     ----------
     n_subjects: int, optional
         The number of subjects to load from maximum of 102 subjects.
-        By default, 30 subjects will be loaded. If None is given,
+        By default, 10 subjects will be loaded. If None is given,
         all 102 subjects will be loaded.
 
     data_dir: string, optional
@@ -1697,10 +1697,13 @@ def fetch_surf_nki_enhanced(n_subjects=30, data_dir=None,
     -------
     data: sklearn.datasets.base.Bunch
         Dictionary-like object, the interest attributes are :
-         - 'func': Paths to functional resting-state images
-         - 'phenotypic': CSV file containing age, dominant hand and sex
-                         for each subject.
-         -
+         - 'func_left': Paths to Gifti files containing resting state
+                        time series left hemisphere
+         - 'func_right': Paths to Gifti files containing resting state
+                         time series right hemisphere
+         - 'phenotypic': array containing tuple with subject ID, age,
+                         dominant hand and sex for each subject.
+         - 'description': data description of the release and references.
 
     References
     ----------
@@ -1803,7 +1806,9 @@ def fetch_surf_nki_enhanced(n_subjects=30, data_dir=None,
                  phenotypic=phenotypic,
                  description=fdescr)
 
+
 def fetch_surf_fsaverage5(data_dir=None, url=None, resume=True, verbose=1):
+
     """ Download Freesurfer fsaverage5 surface
     Parameters
     ----------
@@ -1814,6 +1819,12 @@ def fetch_surf_fsaverage5(data_dir=None, url=None, resume=True, verbose=1):
     url: string, optional
         Override download URL. Used for test only (or if you setup a mirror of
         the data). Default: None
+
+    resume: bool, optional (default True)
+        If true, try resuming download if possible.
+
+    verbose: int, optional (default 1)
+        Defines the level of verbosity of the output.
 
     Returns
     -------
