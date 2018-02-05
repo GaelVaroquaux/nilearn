@@ -180,7 +180,7 @@ class CanICA(MultiPCA):
         self.threshold = threshold
         self.n_init = n_init
 
-    def _unmix_components(self):
+    def _unmix_components(self, components):
         """Core function of CanICA than rotate components_ to maximize
         independance"""
         random_state = check_random_state(self.random_state)
@@ -188,7 +188,7 @@ class CanICA(MultiPCA):
         seeds = random_state.randint(np.iinfo(np.int32).max, size=self.n_init)
         results = Parallel(n_jobs=self.n_jobs, verbose=self.verbose)(
             delayed(self._cache(fastica, func_memory_level=2))
-            (self.components_.T, whiten=True, fun='cube',
+            (components, whiten=True, fun='cube',
              random_state=seed)
             for seed in seeds)
 
@@ -236,6 +236,6 @@ class CanICA(MultiPCA):
             Unmasked data to process
 
         """
-        MultiPCA._raw_fit(self, data)
-        self._unmix_components()
+        components = MultiPCA._raw_fit(self, data)
+        self._unmix_components(components)
         return self
