@@ -888,6 +888,15 @@ def plot_prob_atlas(maps_img, bg_img=MNI152TEMPLATE, view_type='auto',
         if view_type == 'continuous':
             display.add_overlay(map_img, threshold=thr,
                                 cmap=cm.alpha_cmap(color), alpha=alpha)
+        elif view_type == 'filled_contours':
+            display.add_contours(map_img, levels=[thr],
+                                 linewidths=linewidths,
+                                 colors=[color], filled=True,
+                                 alpha=alpha, linestyles='solid', )
+            display.add_contours(map_img, levels=[thr],
+                                linewidths=linewidths,
+                                colors=['k'], filled=False,
+                                alpha=alpha, linestyles='solid', )
         else:
             display.add_contours(map_img, levels=[thr],
                                  linewidths=linewidths,
